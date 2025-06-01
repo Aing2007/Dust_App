@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <title>Get User Location</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      #location {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Get User Location</h1>
+    <div id="location">Fetching location...</div>
+
+    <script>
+      function getLocation() {
+        const locationDiv = document.getElementById("location");
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+              locationDiv.innerHTML = `Latitude: ${lat}<br>Longitude: ${lng}`;
+
+              // ส่งข้อมูลตำแหน่งไปยัง Google Apps Script
+              google.script.run.saveAirQualityData(lat, lng);
+            },
+            (error) => {
+              locationDiv.innerHTML = "Error getting location: " + error.message;
+            }
+          );
+        } else {
+          locationDiv.innerHTML = "Geolocation is not supported by this browser.";
+        }
+      }
+
+      // เรียกฟังก์ชัน getLocation ทุกๆ 10 นาที (600,000 มิลลิวินาที)
+      setInterval(getLocation, 600000);
+
+      // เรียกฟังก์ชัน getLocation ทันทีเมื่อหน้าเว็บโหลด
+      window.onload = getLocation;
+    </script>
+  </body>
+</html>
